@@ -1,55 +1,47 @@
 import java.util.Scanner;
+
 public class Main {
   public static void main(String[] args) {
-    a();
-    b();
-    growth();
-    diagonally();
-  }
-  public static void a() {
-    System.out.println("a");
-    // print 5 lines of "*"
-    for (int i = 0; i < 5; i++) {
-      System.out.println("*");
-    }
-  }
-  public static void b() {
-    System.out.println("b");
-    // print "*" 5 times in one line
-    for (int i = 0; i < 5; i++) {
-      System.out.print("* ");
-    }
-    System.out.println();
-  }
-  public static void growth() {
-    System.out.println("c");
-    // display "*"s in a triangle
-    for (int i=1; i<=5; i++) {
-      for (int j=1; j<=i; j++) {
-        System.out.print("* ");
-      }
-      System.out.println();
-    }
-  }
-  public static void diagonally() {
-    System.out.println("d");
-    // display "*" diagonally
-    for (int i = 0; i < 6; i++) {
-      for (int j = 0; j < 6; j++) {
-        if (i == j) {
-          System.out.print("*");
-        } else {
-          System.out.print("  ");
-        }
-      }
-      System.out.println();
-    }
-  }
-  public static void name() {
-    System.out.println("What is your name?");
+    // get input for scanner
     Scanner input = new Scanner(System.in);
-    String name = input.nextLine();
-    System.out.println("Hello " + name);
+    String string1 = input.nextLine();
+    String string2 = input.nextLine();
+    String string3 = input.nextLine();
+    String string4 = input.nextLine();
+    String string5 = input.nextLine();
     input.close();
+    // input defualt values for testing
+    string1 = "MISSISSIPPI, 2, *";
+    string2 = "MISSISSIPPI, IS";
+    string3 = "MISSISSIPPI, P";
+    string4 = "MISSISSIPPI, I";
+    string5 = "MISSISSIPPI, 2, I";
+    // parse "MISSISSIPPI, 2, *" into char_split("MISSISSIPPI", 2, '*')
+    String[] split = string1.split(", ");
+    String a$ = split[0];
+    int n = Integer.parseInt(split[1]);
+    char c = split[2].charAt(0);
+    System.out.println(Strings.char_split(a$, n, c));
+    // parse "MISSISSIPPI, IS" into strrem("MISSISSIPPI", "IS")
+    split = string2.split(", ");
+    a$ = split[0];
+    String b$ = split[1];
+    System.out.println(Strings.strrem(a$, b$));
+    // parse "MISSISSIPPI, P" into strchr("MISSISSIPPI", "P")
+    split = string3.split(", ");
+    a$ = split[0];
+    b$ = split[1];
+    System.out.println(Strings.strchr(a$, b$));
+    // MISSISSIPPI, I
+    split = string4.split(", ");
+    a$ = split[0];
+    b$ = split[1];
+    System.out.println(Strings.strtok(a$, b$));
+    // MISSISSIPPI, 2, I
+    split = string5.split(", ");
+    a$ = split[0];
+    n = Integer.parseInt(split[1]);
+    b$ = split[2];
+    System.out.println(Strings.wordwrap(a$, n, b$));
   }
 }
