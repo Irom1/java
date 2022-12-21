@@ -1,42 +1,28 @@
 public class Enclosure {
     private String cleanedString;
     private char addingChar;
-    private int startEnclosureIndex;
-    private int endEnclosureIndex;
 
     // create a constructor
     public Enclosure(String string) {
         cleanedString = Strings.strrem(string, " ");
         addingChar = '(';
+        findUnbalancedIndex(); // sets addingChar to appropriate value
     }
 
     // create a method to run the program
     public void run() {
-        boolean addCharToLeftSide = true;
+        // run code
+        String validLocations = findAllValidLocations();
+        /*/ debug info
         System.out.println();
-        // find the point where the string is unbalanced
-        int unbalancedIndex = findUnbalancedIndex();
         System.out.println("Initial string: " + cleanedString);
-        //System.out.println(unbalancedIndex);
         System.out.println("Char to be added: " + addingChar);
-        // get the part of the string before the unbalanced point
-        String newPart = cleanedString.substring(0, unbalancedIndex);
-        if(addingChar == ')' || addingChar == ']') {
-            newPart = cleanedString.substring(unbalancedIndex);
-            addCharToLeftSide = false;
-        }
-        System.out.println("Should be added to " + (addCharToLeftSide ? "left" : "right") + " side");
-        //System.out.println(newPart);
-        // find places to add the char
-        String inside = findInside(newPart);
-        System.out.println("Can be added in this segment: " + inside);
-        System.out.println("Range start: " + startEnclosureIndex);
-        System.out.println("Range end: " + endEnclosureIndex);
-        //
+        // */
+        System.out.println(validLocations);
     }
 
     // create a method to find the point where the string is unbalanced
-    private int findUnbalancedIndex() {
+    private void findUnbalancedIndex() {
         String openChars = "";
         int unbalancedIndex = -1;
         int i = 0;
@@ -59,48 +45,90 @@ public class Enclosure {
         }
         if (unbalancedIndex == -1) {
             unbalancedIndex = cleanedString.lastIndexOf(openChars);
-            startEnclosureIndex = unbalancedIndex;
-            endEnclosureIndex = cleanedString.length() - 1;
-        } else {
-            endEnclosureIndex = unbalancedIndex;
-            startEnclosureIndex = 0;
         }
         char opener = cleanedString.charAt(unbalancedIndex);
         addingChar = reverseChar(opener);
-        return unbalancedIndex;
+        // return unbalancedIndex;
     }
 
-    private String findInside(String outside) {
-        String inside = "";
-        inside = clean(outside, "(", true);
-        inside = clean(inside, ")", false);
-        inside = clean(inside, "[", true);
-        inside = clean(inside, "]", false);
-        // find indexes of first and last char of inside
-        int firstIndex = outside.indexOf(inside);
-        if(firstIndex == -1) System.out.println("firstIndex is -1");
-        startEnclosureIndex += firstIndex;
-        endEnclosureIndex = startEnclosureIndex + inside.length() - 1;
-        return inside;
-    }
-    private String clean(String outside, String seperator, boolean rightSide) {
-        String inside = "";
-        int i = outside.indexOf(seperator);
-        if (i != -1) {
-            if (rightSide) {
-                inside = outside.substring(i + 1);
-            } else {
-                inside = outside.substring(0, i);
+    private String findAllValidLocations() {
+        String validLocations = "";
+        for (int i = 0; i < cleanedString.length() + 1; i++) {
+            String testString = cleanedString.substring(0, i) + addingChar + cleanedString.substring(i);
+            boolean isValid = isValid(testString);
+            if (isValid) {
+                if (validLocations.length() > 0) {
+                    validLocations += ", ";
+                }
+                validLocations += i + 1;
             }
-        } else {
-            inside = outside;
         }
-        return inside;
+        return validLocations;
+    }
+
+    private boolean isValid(String full) {
+        full = " " + full + " ";
+        boolean valid = true;
+        int i = 1;
+        while (valid && i < full.length() - 1) {
+            // establish current, previous, and next chars
+            char current = full.charAt(i);
+            char previous = full.charAt(i - 1);
+            char next = full.charAt(i + 1);
+            // checks
+            if (current == ')' || current == ']') {
+                char oposite = reverseChar(current);
+                String segment = full.substring(0, i);
+                int index = segment.lastIndexOf(oposite);
+                if (index == -1) {
+                    // enclosure doesn't have an opener
+                    valid = false;
+                } else {
+                    segment = segment.substring(index);
+                    if (segment.indexOf('+') == -1 && segment.indexOf('-') == -1 && segment.indexOf('*') == -1
+                            && segment.indexOf('/') == -1) {
+                        // enclosure doesn't have an operator inside
+                        valid = false;
+                    }
+                    if (current == ')') {
+                        if (segment.indexOf('[') != -1 || segment.indexOf(']') != -1) {
+                            // enclosure has another enclosure inside which is invalid
+                            valid = false;
+                        }
+                    }
+                }
+            }
+            // check that enclosure symbols are on appropriate side of operators
+            if (
+                ((current == ')' || current == ']') && charIsOperator(previous)) ||
+                ((current == '(' || current == '[') && charIsOperator(next))
+            ) {
+                valid = false;
+            }
+            // check that operator isn't breaking up a two digit number
+            if ((current == ')' || current == ']') && charIsNumber(previous) && charIsNumber(next)) {
+                valid = false;
+            }
+            // increase index
+            i++;
+        }
+        if (valid) {
+            //System.out.println("Valid: " + full);
+        }
+        return valid;
     }
 
     private char reverseChar(char c) {
         String enclosures = "[]()";
         String opposites = "][)(";
         return opposites.charAt(enclosures.indexOf(c));
+    }
+
+    private boolean charIsOperator(char c) {
+        return c == '+' || c == '-' || c == '*' || c == '/' || c == ' ';
+    }
+
+    private boolean charIsNumber(char c) {
+        return c >= '0' && c <= '9';
     }
 }
