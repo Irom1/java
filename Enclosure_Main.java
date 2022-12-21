@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class Main {
+public class Enclosure_Main {
   public static void main(String[] args) {
     boolean testing = false;
     String string1, string2, string3, string4, string5;
