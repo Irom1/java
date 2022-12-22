@@ -6,14 +6,14 @@ public class Enclosure {
     public Enclosure(String string) {
         cleanedString = Strings.strrem(string, " ");
         addingChar = '(';
-        findUnbalancedIndex(); // sets addingChar to appropriate value
+        addingChar = findUnbalancedIndex(cleanedString); // sets addingChar to appropriate value
     }
 
     // create a method to run the program
     public void run() {
         // run code
         String validLocations = findAllValidLocations();
-        /*/ debug info
+        /* debug info
         System.out.println();
         System.out.println("Initial string: " + cleanedString);
         System.out.println("Char to be added: " + addingChar);
@@ -22,7 +22,8 @@ public class Enclosure {
     }
 
     // create a method to find the point where the string is unbalanced
-    private void findUnbalancedIndex() {
+    private char findUnbalancedIndex(String s) {
+        String cleanedString = s;
         String openChars = "";
         int unbalancedIndex = -1;
         int i = 0;
@@ -47,7 +48,7 @@ public class Enclosure {
             unbalancedIndex = cleanedString.lastIndexOf(openChars);
         }
         char opener = cleanedString.charAt(unbalancedIndex);
-        addingChar = reverseChar(opener);
+        return reverseChar(opener);
         // return unbalancedIndex;
     }
 
@@ -106,7 +107,7 @@ public class Enclosure {
                 valid = false;
             }
             // check that operator isn't breaking up a two digit number
-            if ((current == ')' || current == ']') && charIsNumber(previous) && charIsNumber(next)) {
+            if ((current == ')' || current == ']' || current == '(' || current == '[') && charIsNumber(previous) && charIsNumber(next)) {
                 valid = false;
             }
             // increase index
